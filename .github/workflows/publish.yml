@@ -106,7 +106,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: src/ModInstaller.Native.TypeScript
-        run: yarn install
+        run: yarn install --ignore-scripts
 
       - name: Build webpack bundle and declarations
         working-directory: src/ModInstaller.Native.TypeScript
