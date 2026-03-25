@@ -487,13 +487,18 @@ async function main() {
       // Compile TypeScript tests
       execCommand("npx tsc -p tsconfig.test.json");
 
-      // Copy native module to dist for tests (into platform-specific dir)
+      // Copy native binaries to dist for tests (into platform-specific dir)
       const platformDir = `${process.platform}-${process.arch}`;
       const testPlatformDir = path.resolve(`dist/${platformDir}`);
       if (!fs.existsSync(testPlatformDir)) {
         fs.mkdirSync(testPlatformDir, { recursive: true });
       }
       copyItem(`build/${configuration}/modinstaller.node`, `dist/${platformDir}/modinstaller.node`);
+      if (process.platform === "win32") {
+        copyItem("ModInstaller.Native.dll", `dist/${platformDir}/ModInstaller.Native.dll`);
+      } else if (process.platform === "linux") {
+        copyItem("ModInstaller.Native.so", `dist/${platformDir}/ModInstaller.Native.so`);
+      }
 
       // Run AVA tests
       // On Linux, tolerate exit codes related to crashes during Native AOT cleanup:
