@@ -1,0 +1,193 @@
+name: Publish NPM Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_native:
+        description: 'Publish @nexusmods/fomod-installer-native'
+        type: boolean
+        default: true
+      publish_ipc:
+        description: 'Publish @nexusmods/fomod-installer-ipc'
+        type: boolean
+        default: true
+      dry_run:
+        description: 'Dry run (do not actually publish)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-native:
+    if: ${{ inputs.publish_native }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win32-x64
+          - os: ubuntu-latest
+            platform: linux-x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.x'
+
+      - name: Read Node.js version from package.json
+        id: node-version
+        shell: pwsh
+        run: |
+          $packageJson = Get-Content src/ModInstaller.Native.TypeScript/package.json | ConvertFrom-Json
+          $nodeVersion = $packageJson.engines.node
+          echo "NODE_VERSION=$nodeVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.node-version.outputs.NODE_VERSION }}
+
+      - name: Build native binaries
+        working-directory: src/ModInstaller.Native.TypeScript
+        run: |
+          yarn build-native
+          yarn install
+          yarn build-napi
+
+      - name: Copy native artifacts to platform dir
+        working-directory: src/ModInstaller.Native.TypeScript
+        shell: bash
+        run: |
+          mkdir -p artifacts/${{ matrix.platform }}
+          cp build/Release/modinstaller.node artifacts/${{ matrix.platform }}/
+          if [ "${{ matrix.platform }}" = "win32-x64" ]; then
+            cp ModInstaller.Native.dll artifacts/${{ matrix.platform }}/
+          elif [ "${{ matrix.platform }}" = "linux-x64" ]; then
+            cp ModInstaller.Native.so artifacts/${{ matrix.platform }}/
+          fi
+
+      - name: Upload platform artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-${{ matrix.platform }}
+          path: src/ModInstaller.Native.TypeScript/artifacts/${{ matrix.platform }}/
+
+  publish-native:
+    if: ${{ inputs.publish_native }}
+    needs: build-native
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Read Node.js version from package.json
+        id: node-version
+        shell: pwsh
+        run: |
+          $packageJson = Get-Content src/ModInstaller.Native.TypeScript/package.json | ConvertFrom-Json
+          $nodeVersion = $packageJson.engines.node
+          echo "NODE_VERSION=$nodeVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.node-version.outputs.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        working-directory: src/ModInstaller.Native.TypeScript
+        run: yarn install
+
+      - name: Build webpack bundle and declarations
+        working-directory: src/ModInstaller.Native.TypeScript
+        run: yarn build-webpack
+
+      - name: Download all platform artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: src/ModInstaller.Native.TypeScript/dist/
+          pattern: native-*
+          merge-multiple: false
+
+      - name: Move platform artifacts into dist
+        working-directory: src/ModInstaller.Native.TypeScript
+        shell: bash
+        run: |
+          # download-artifact creates native-win32-x64/ and native-linux-x64/ dirs
+          # Move contents to the expected platform dir names
+          for dir in dist/native-*/; do
+            platform=$(basename "$dir" | sed 's/^native-//')
+            mkdir -p "dist/$platform"
+            cp -r "$dir"* "dist/$platform/"
+            rm -rf "$dir"
+          done
+          echo "=== dist/ contents ==="
+          find dist/ -type f
+
+      - name: Publish
+        working-directory: src/ModInstaller.Native.TypeScript
+        shell: bash
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            npm publish --dry-run --access public
+          else
+            npm publish --access public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  build-ipc:
+    if: ${{ inputs.publish_ipc }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.x'
+
+      - name: Read Node.js version from package.json
+        id: node-version
+        shell: pwsh
+        run: |
+          $packageJson = Get-Content src/ModInstaller.IPC.TypeScript/package.json | ConvertFrom-Json
+          $nodeVersion = $packageJson.engines.node
+          echo "NODE_VERSION=$nodeVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.node-version.outputs.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Build IPC
+        working-directory: src/ModInstaller.IPC.TypeScript
+        run: |
+          yarn install
+          yarn build
+
+      - name: List dist contents
+        working-directory: src/ModInstaller.IPC.TypeScript
+        shell: bash
+        run: |
+          echo "=== dist/ contents ==="
+          find dist/ -type f
+
+      - name: Publish
+        working-directory: src/ModInstaller.IPC.TypeScript
+        shell: bash
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            npm publish --dry-run --access public
+          else
+            npm publish --access public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

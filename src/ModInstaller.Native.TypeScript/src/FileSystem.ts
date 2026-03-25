@@ -1,4 +1,7 @@
+import { addon } from './resolve-native';
 import * as types from './types';
+
+const native: types.IFileSystemExtension = addon;
 
 export class NativeFileSystem implements types.FileSystem {
   private manager: types.FileSystem;
@@ -8,8 +11,7 @@ export class NativeFileSystem implements types.FileSystem {
     readDirectoryFileList: (directoryPath: string, pattern: string, searchType: number) => string[] | null,
     readDirectoryList: (directoryPath: string) => string[] | null
   ) {
-    const addon: types.IFileSystemExtension = require('./../build/modinstaller.node');
-    this.manager = new addon.FileSystem(
+    this.manager = new native.FileSystem(
       readFileContent,
       readDirectoryFileList,
       readDirectoryList
@@ -21,7 +23,6 @@ export class NativeFileSystem implements types.FileSystem {
   }
 
   public static setDefaultCallbacks = (): void => {
-    const addon: types.IFileSystemExtension = require('./../build/modinstaller.node');
-    return addon.FileSystem.setDefaultCallbacks();
+    return native.FileSystem.setDefaultCallbacks();
   }
 }
