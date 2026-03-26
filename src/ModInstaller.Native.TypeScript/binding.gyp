@@ -21,7 +21,7 @@
                         "-l:ModInstaller.Native.so"
                     ],
                     "ldflags": [
-                        "-Wl,-rpath,'$$ORIGIN'"
+                        "-Wl,-rpath,<(module_root_dir)"
                     ]
                 }]
             ],
