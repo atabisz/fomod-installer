@@ -1,6 +1,6 @@
 {
   "name": "@nexusmods/fomod-installer-native",
-  "version": "0.11.1",
+  "version": "0.12.0",
   "description": "Package of native bindings bundled with TS declarations",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
