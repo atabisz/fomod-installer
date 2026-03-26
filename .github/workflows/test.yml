@@ -91,7 +91,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y build-essential p7zip-full
 
       - name: Install dependencies (ignore scripts to avoid premature gyp build)
-        run: pnpm install --ignore-scripts
+        run: pnpm install
 
       - name: Fix 7zip permissions (Linux)
         if: runner.os == 'Linux'

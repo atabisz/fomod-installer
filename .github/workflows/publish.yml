@@ -112,7 +112,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        run: pnpm install --ignore-scripts
+        run: pnpm install
 
       - name: Build webpack bundle and declarations
         run: pnpm --filter @nexusmods/fomod-installer-native build-webpack

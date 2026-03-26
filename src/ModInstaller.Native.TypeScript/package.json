@@ -18,6 +18,7 @@
     "dist/"
   ],
   "scripts": {
+    "install": "echo 'Skipping auto node-gyp — use build-napi instead'",
     "clean": "node build.js clear",
     "native": "node build.js build-native",
     "build": "node build.js build",

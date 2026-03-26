@@ -1,6 +1,6 @@
 packages:
-  - 'src/ModInstaller.Native.TypeScript'
-  - 'src/ModInstaller.IPC.TypeScript'
+  - src/ModInstaller.Native.TypeScript
+  - src/ModInstaller.IPC.TypeScript
 
 catalog:
   7zip-bin: ^5.2.0
@@ -13,7 +13,7 @@ catalog:
   ts-node: ^10.9.1
   typescript: ^5.0.0
   vitest: ^4.1.1
-  vortex-api: 'Nexus-Mods/vortex-api'
+  vortex-api: Nexus-Mods/vortex-api
   webpack: ^5.95.0
   webpack-cli: ^5.1.4
-  winapi-bindings: 'Nexus-Mods/node-winapi-bindings'
+  winapi-bindings: Nexus-Mods/node-winapi-bindings
