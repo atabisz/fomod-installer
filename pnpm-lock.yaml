@@ -93,6 +93,10 @@ importers:
         version: https://codeload.github.com/Nexus-Mods/node-winapi-bindings/tar.gz/faa92afe3320731e98abc15b3f5f19c60896d7c1
 
   src/ModInstaller.Native.TypeScript:
+    dependencies:
+      node-gyp-build:
+        specifier: ^4.8.0
+        version: 4.8.4
     devDependencies:
       7zip-bin:
         specifier: 'catalog:'
@@ -1083,6 +1087,10 @@ packages:
   node-addon-api@8.7.0:
     resolution: {integrity: sha512-9MdFxmkKaOYVTV+XVRG8ArDwwQ77XIgIPyKASB1k3JPq3M8fGQQQE3YpMOrKm6g//Ktx8ivZr8xo1Qmtqub+GA==}
     engines: {node: ^18 || ^20 || >= 21}
+
+  node-gyp-build@4.8.4:
+    resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
+    hasBin: true
 
   node-gyp@10.0.0:
     resolution: {integrity: sha512-LkaKUbjyacJGRHiuhUeUblzZNxTF1/XNooyAl6aiaJ6ZpeurR4Mk9sjxncGNSI7pETqyqM+hLAER0788oSxt0A==}
@@ -2479,6 +2487,8 @@ snapshots:
   node-addon-api@8.5.0: {}
 
   node-addon-api@8.7.0: {}
+
+  node-gyp-build@4.8.4: {}
 
   node-gyp@10.0.0:
     dependencies:
