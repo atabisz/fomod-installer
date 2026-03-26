@@ -21,6 +21,7 @@ const VALID_TYPES = [
   "build-native",
   "build-napi",
   "build-webpack",
+  "build-content",
   "test-build",
 ];
 
@@ -437,17 +438,18 @@ async function main() {
 
     // Copy content to dist
     if (["build", "test", "test-build", "build-content"].includes(type)) {
-      console.log("Copying content to dist");
+      const platformDir = `${process.platform}-${process.arch}`;
+      console.log(`Copying content to dist/${platformDir}`);
 
       if (process.platform == "win32") {
-        copyItem("ModInstaller.Native.dll", "dist/ModInstaller.Native.dll");
+        copyItem("ModInstaller.Native.dll", `dist/${platformDir}/ModInstaller.Native.dll`);
       } else if (process.platform == "linux") {
-        copyItem("ModInstaller.Native.so", "dist/ModInstaller.Native.so");
+        copyItem("ModInstaller.Native.so", `dist/${platformDir}/ModInstaller.Native.so`);
       }
 
       copyItem(
         `build/${configuration}/modinstaller.node`,
-        "dist/modinstaller.node",
+        `dist/${platformDir}/modinstaller.node`,
       );
       console.log("");
     }
@@ -469,6 +471,10 @@ async function main() {
       // Compile TypeScript declarations
       execCommand("npx tsc --emitDeclarationOnly");
 
+      // Compile resolve-native.ts separately (it's externalized from the webpack bundle
+      // because it uses dynamic require() to load platform-specific .node binaries)
+      execCommand("npx tsc --outDir dist --module commonjs --moduleResolution node --esModuleInterop --target ES2019 --skipLibCheck --declaration src/resolve-native.ts");
+
       // Build with webpack
       execCommand("npx webpack --config webpack.config.js");
       console.log("");
@@ -481,12 +487,18 @@ async function main() {
       // Compile TypeScript tests
       execCommand("npx tsc -p tsconfig.test.json");
 
-      // Copy native module to dist for tests
-      const buildDir = path.resolve("dist/build");
-      if (!fs.existsSync(buildDir)) {
-        fs.mkdirSync(buildDir, { recursive: true });
+      // Copy native binaries to dist for tests (into platform-specific dir)
+      const platformDir = `${process.platform}-${process.arch}`;
+      const testPlatformDir = path.resolve(`dist/${platformDir}`);
+      if (!fs.existsSync(testPlatformDir)) {
+        fs.mkdirSync(testPlatformDir, { recursive: true });
       }
-      copyItem(`build/${configuration}/modinstaller.node`, "dist/build/modinstaller.node");
+      copyItem(`build/${configuration}/modinstaller.node`, `dist/${platformDir}/modinstaller.node`);
+      if (process.platform === "win32") {
+        copyItem("ModInstaller.Native.dll", `dist/${platformDir}/ModInstaller.Native.dll`);
+      } else if (process.platform === "linux") {
+        copyItem("ModInstaller.Native.so", `dist/${platformDir}/ModInstaller.Native.so`);
+      }
 
       // Run AVA tests
       // On Linux, tolerate exit codes related to crashes during Native AOT cleanup:

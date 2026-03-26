@@ -1,10 +1,9 @@
 {
-  "name": "fomod-installer-native",
+  "name": "@nexusmods/fomod-installer-native",
   "version": "0.10.0",
   "description": "Package of native bindings bundled with TS declarations",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "gypfile": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/Nexus-Mods/fomod-installer.git"
@@ -15,10 +14,12 @@
   "bugs": {
     "url": "https://github.com/Nexus-Mods/fomod-installer/issues"
   },
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "clean": "node build.js clear",
     "native": "node build.js build-native",
-    "build-without-gyp": "node build.js build",
     "build": "node build.js build",
     "build-native": "node build.js build-native",
     "build-napi": "node build.js build-napi",
@@ -26,8 +27,7 @@
     "build-content": "node build.js build-content",
     "test": "node build.js test",
     "test-build": "node build.js test-build",
-    "test-no-build": "pwsh ./commands.ps1 test-no-build",
-    "test-ava": "tsc -p tsconfig.test.json && node -e \"require('fs').mkdirSync('dist/build', {recursive:true}); require('fs').copyFileSync('build/Release/modinstaller.node', 'dist/build/modinstaller.node');\" && ava",
+    "test-ava": "tsc -p tsconfig.test.json && node -e \"const p=process.platform+'-'+process.arch; require('fs').mkdirSync('dist/'+p, {recursive:true}); require('fs').copyFileSync('build/Release/modinstaller.node', 'dist/'+p+'/modinstaller.node');\" && ava",
     "watch:build": "tsc -p tsconfig.json -w"
   },
   "packageManager": "yarn@1.22.19",

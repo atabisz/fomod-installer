@@ -155,7 +155,8 @@ export abstract class BaseIPCConnection {
   protected getExecutablePaths(exeName: string): string[] {
     const paths: string[] = [];
 
-    const distPath = path.join(__dirname, '..', '..', exeName);
+    // The executable is distributed alongside the bundled JS in dist/
+    const distPath = path.join(__dirname, exeName);
     paths.push(distPath);
 
     return paths;

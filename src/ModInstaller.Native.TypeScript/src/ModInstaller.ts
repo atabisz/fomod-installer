@@ -1,4 +1,7 @@
+import { addon } from './resolve-native';
 import * as types from './types';
+
+const native: types.IModInstallerExtension = addon;
 
 export class NativeModInstaller implements types.ModInstaller {
   private manager: types.ModInstaller;
@@ -12,8 +15,7 @@ export class NativeModInstaller implements types.ModInstaller {
     uiEndDialog: () => void,
     uiUpdateState: (installSteps: types.IInstallStep[], currentStep: number) => void
   ) {
-    const addon: types.IModInstallerExtension = require('./../build/modinstaller.node');
-    this.manager = new addon.ModInstaller(
+    this.manager = new native.ModInstaller(
       pluginsGetAll,
       contextGetAppVersion,
       contextGetCurrentGameVersion,
@@ -30,7 +32,6 @@ export class NativeModInstaller implements types.ModInstaller {
   }
 
   public static testSupported = (files: string[], allowedTypes: string[]): types.SupportedResult => {
-    const addon: types.IModInstallerExtension = require('./../build/modinstaller.node');
-    return addon.ModInstaller.testSupported(files, allowedTypes);
+    return native.ModInstaller.testSupported(files, allowedTypes);
   }
 }

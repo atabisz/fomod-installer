@@ -7,6 +7,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <RootNamespace>ModInstallerIPC</RootNamespace>
     <AssemblyName>ModInstallerIPC</AssemblyName>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">

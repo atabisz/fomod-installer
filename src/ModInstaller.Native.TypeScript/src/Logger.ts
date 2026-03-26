@@ -1,4 +1,7 @@
+import { addon } from './resolve-native';
 import * as types from './types';
+
+const native: types.ILoggerExtension = addon;
 
 export class NativeLogger implements types.Logger {
   private manager: types.Logger;
@@ -6,8 +9,7 @@ export class NativeLogger implements types.Logger {
   public constructor(
     log: (level: number, message: string) => void
   ) {
-    const addon: types.ILoggerExtension = require('./../build/modinstaller.node');
-    this.manager = new addon.Logger(
+    this.manager = new native.Logger(
       log
     );
   }
@@ -21,7 +23,6 @@ export class NativeLogger implements types.Logger {
   }
 
   public static setDefaultCallbacks = (): void => {
-    const addon: types.ILoggerExtension = require('./../build/modinstaller.node');
-    return addon.Logger.setDefaultCallbacks();
+    return native.Logger.setDefaultCallbacks();
   }
 }
