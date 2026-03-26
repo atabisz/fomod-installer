@@ -5,14 +5,21 @@
 var path = require('path');
 var fs = require('fs');
 
+var prebuildsDir = path.join(__dirname, 'prebuilds');
+if (!fs.existsSync(prebuildsDir)) {
+  // No prebuilds directory — this is a development install (e.g. pnpm install
+  // in the repo). The native binaries will be built separately via build.js.
+  process.exit(0);
+}
+
 try {
-  // Try to load the addon — works if a prebuild or previous build exists
+  // Try to load the addon — works if a prebuild matches this platform
   require('node-gyp-build')(__dirname);
 } catch (_) {
   // Prebuild missing or broken — compile the .node from source.
   // The .dll/.so/.lib ship inside prebuilds/ — copy them next to binding.gyp
   // so node-gyp can link against them.
-  var platformDir = path.join(__dirname, 'prebuilds', process.platform + '-' + process.arch);
+  var platformDir = path.join(prebuildsDir, process.platform + '-' + process.arch);
   if (fs.existsSync(platformDir)) {
     fs.readdirSync(platformDir).forEach(function (file) {
       if (/\.(dll|lib|so)$/i.test(file)) {
