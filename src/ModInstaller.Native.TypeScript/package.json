@@ -17,8 +17,10 @@
   "files": [
     "dist/",
     "prebuilds/",
+    "src-native/",
     "install.js",
-    "binding.gyp"
+    "binding.gyp",
+    "ModInstaller.Native.h"
   ],
   "scripts": {
     "install": "node install.js",

@@ -444,6 +444,7 @@ async function main() {
 
       if (process.platform == "win32") {
         copyItem("ModInstaller.Native.dll", `prebuilds/${platformDir}/ModInstaller.Native.dll`);
+        copyItem("ModInstaller.Native.lib", `prebuilds/${platformDir}/ModInstaller.Native.lib`);
       } else if (process.platform == "linux") {
         copyItem("ModInstaller.Native.so", `prebuilds/${platformDir}/ModInstaller.Native.so`);
       }
@@ -494,6 +495,7 @@ async function main() {
       copyItem(`build/${configuration}/modinstaller.node`, `prebuilds/${platformDir}/modinstaller.napi.node`);
       if (process.platform === "win32") {
         copyItem("ModInstaller.Native.dll", `prebuilds/${platformDir}/ModInstaller.Native.dll`);
+        copyItem("ModInstaller.Native.lib", `prebuilds/${platformDir}/ModInstaller.Native.lib`);
       } else if (process.platform === "linux") {
         copyItem("ModInstaller.Native.so", `prebuilds/${platformDir}/ModInstaller.Native.so`);
       }

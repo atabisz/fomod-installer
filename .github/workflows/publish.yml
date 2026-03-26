@@ -62,6 +62,7 @@ jobs:
           cp build/Release/modinstaller.node prebuilds/${{ matrix.platform }}/modinstaller.napi.node
           if [ "${{ matrix.platform }}" = "win32-x64" ]; then
             cp ModInstaller.Native.dll prebuilds/${{ matrix.platform }}/
+            cp ModInstaller.Native.lib prebuilds/${{ matrix.platform }}/
           elif [ "${{ matrix.platform }}" = "linux-x64" ]; then
             cp ModInstaller.Native.so prebuilds/${{ matrix.platform }}/
           fi
@@ -71,6 +72,12 @@ jobs:
         with:
           name: native-${{ matrix.platform }}
           path: src/ModInstaller.Native.TypeScript/prebuilds/${{ matrix.platform }}/
+
+      - name: Upload native header
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-header-${{ matrix.platform }}
+          path: src/ModInstaller.Native.TypeScript/ModInstaller.Native.h
 
   publish-native:
     if: ${{ inputs.publish_native }}
@@ -112,15 +119,21 @@ jobs:
         working-directory: src/ModInstaller.Native.TypeScript
         shell: bash
         run: |
-          # download-artifact creates native-win32-x64/ and native-linux-x64/ dirs
-          # Move contents to the expected platform dir names
+          # download-artifact creates native-win32-x64/, native-linux-x64/, and native-header-* dirs
+          # Extract the header (platform-independent) to package root
+          for dir in prebuilds/native-header-*/; do
+            cp "$dir"ModInstaller.Native.h .
+            rm -rf "$dir"
+          done
+          # Move platform prebuilds to the expected dir names
           for dir in prebuilds/native-*/; do
             platform=$(basename "$dir" | sed 's/^native-//')
             mkdir -p "prebuilds/$platform"
             cp -r "$dir"* "prebuilds/$platform/"
             rm -rf "$dir"
           done
-          echo "=== prebuilds/ contents ==="
+          echo "=== package contents ==="
+          ls -la ModInstaller.Native.h
           find prebuilds/ -type f
 
       - name: Publish
