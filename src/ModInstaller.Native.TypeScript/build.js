@@ -279,6 +279,7 @@ async function main() {
         "*.so",
         "build",
         "dist",
+        "prebuilds",
         "coverage",
         ".nyc_output",
       ]);
@@ -436,20 +437,21 @@ async function main() {
       console.log("");
     }
 
-    // Copy content to dist
+    // Copy content to prebuilds (node-gyp-build convention)
     if (["build", "test", "test-build", "build-content"].includes(type)) {
       const platformDir = `${process.platform}-${process.arch}`;
-      console.log(`Copying content to dist/${platformDir}`);
+      console.log(`Copying content to prebuilds/${platformDir}`);
 
       if (process.platform == "win32") {
-        copyItem("ModInstaller.Native.dll", `dist/${platformDir}/ModInstaller.Native.dll`);
+        copyItem("ModInstaller.Native.dll", `prebuilds/${platformDir}/ModInstaller.Native.dll`);
+        copyItem("ModInstaller.Native.lib", `prebuilds/${platformDir}/ModInstaller.Native.lib`);
       } else if (process.platform == "linux") {
-        copyItem("ModInstaller.Native.so", `dist/${platformDir}/ModInstaller.Native.so`);
+        copyItem("ModInstaller.Native.so", `prebuilds/${platformDir}/ModInstaller.Native.so`);
       }
 
       copyItem(
         `build/${configuration}/modinstaller.node`,
-        `dist/${platformDir}/modinstaller.node`,
+        `prebuilds/${platformDir}/modinstaller.napi.node`,
       );
       console.log("");
     }
@@ -484,17 +486,18 @@ async function main() {
     if (type === "test") {
       console.log("Running tests");
 
-      // Copy native binaries to dist for tests (into platform-specific dir)
+      // Copy native binaries to prebuilds for tests (node-gyp-build convention)
       const platformDir = `${process.platform}-${process.arch}`;
-      const testPlatformDir = path.resolve(`dist/${platformDir}`);
+      const testPlatformDir = path.resolve(`prebuilds/${platformDir}`);
       if (!fs.existsSync(testPlatformDir)) {
         fs.mkdirSync(testPlatformDir, { recursive: true });
       }
-      copyItem(`build/${configuration}/modinstaller.node`, `dist/${platformDir}/modinstaller.node`);
+      copyItem(`build/${configuration}/modinstaller.node`, `prebuilds/${platformDir}/modinstaller.napi.node`);
       if (process.platform === "win32") {
-        copyItem("ModInstaller.Native.dll", `dist/${platformDir}/ModInstaller.Native.dll`);
+        copyItem("ModInstaller.Native.dll", `prebuilds/${platformDir}/ModInstaller.Native.dll`);
+        copyItem("ModInstaller.Native.lib", `prebuilds/${platformDir}/ModInstaller.Native.lib`);
       } else if (process.platform === "linux") {
-        copyItem("ModInstaller.Native.so", `dist/${platformDir}/ModInstaller.Native.so`);
+        copyItem("ModInstaller.Native.so", `prebuilds/${platformDir}/ModInstaller.Native.so`);
       }
 
       // Run Vitest tests

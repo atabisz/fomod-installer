@@ -1,6 +1,6 @@
 {
   "name": "@nexusmods/fomod-installer-native",
-  "version": "0.11.1",
+  "version": "0.12.0",
   "description": "Package of native bindings bundled with TS declarations",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,10 +15,15 @@
     "url": "https://github.com/Nexus-Mods/fomod-installer/issues"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "prebuilds/",
+    "src-native/",
+    "install.js",
+    "binding.gyp",
+    "ModInstaller.Native.h"
   ],
   "scripts": {
-    "install": "echo 'Skipping auto node-gyp — use build-napi instead'",
+    "install": "node install.js",
     "clean": "node build.js clear",
     "native": "node build.js build-native",
     "build": "node build.js build",
@@ -38,6 +43,9 @@
     "napi_versions": [
       8
     ]
+  },
+  "dependencies": {
+    "node-gyp-build": "^4.8.0"
   },
   "devDependencies": {
     "7zip-bin": "catalog:",
