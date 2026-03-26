@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   build-native:
-    if: ${{ inputs.pack_native != false }}
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.pack_native }}
     strategy:
       matrix:
         include:
@@ -72,7 +72,7 @@ jobs:
           path: src/ModInstaller.Native.TypeScript/artifacts/${{ matrix.platform }}/
 
   pack-native:
-    if: ${{ inputs.pack_native != false }}
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.pack_native }}
     needs: build-native
     runs-on: ubuntu-latest
 
@@ -124,7 +124,7 @@ jobs:
           path: src/ModInstaller.Native.TypeScript/*.tgz
 
   pack-ipc:
-    if: ${{ inputs.pack_ipc != false }}
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.pack_ipc }}
     runs-on: ubuntu-latest
 
     steps:
