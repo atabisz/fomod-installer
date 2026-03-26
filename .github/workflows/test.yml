@@ -79,6 +79,9 @@ jobs:
         with:
           node-version: ${{ steps.node-version.outputs.NODE_VERSION }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup MSVC (Windows)
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
@@ -88,8 +91,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y build-essential p7zip-full
 
       - name: Install dependencies (ignore scripts to avoid premature gyp build)
-        run: yarn install --ignore-scripts
-        working-directory: src/ModInstaller.Native.TypeScript
+        run: pnpm install
 
       - name: Fix 7zip permissions (Linux)
         if: runner.os == 'Linux'
@@ -97,8 +99,7 @@ jobs:
         working-directory: src/ModInstaller.Native.TypeScript
 
       - name: Build and run tests
-        run: yarn test
-        working-directory: src/ModInstaller.Native.TypeScript
+        run: pnpm --filter @nexusmods/fomod-installer-native test
 
   js-ipc-tests:
     name: JS IPC Tests (${{ matrix.runtime }} on ${{ matrix.os }})
@@ -121,6 +122,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -133,13 +137,10 @@ jobs:
           sudo apt-get install -y mono-complete
 
       - name: Install dependencies
-        run: yarn install
-        working-directory: src/ModInstaller.IPC.TypeScript
+        run: pnpm install
 
       - name: Build C# IPC module
-        run: yarn build-csharp
-        working-directory: src/ModInstaller.IPC.TypeScript
+        run: pnpm --filter @nexusmods/fomod-installer-ipc build-csharp
 
       - name: Run tests
-        run: yarn test-ava
-        working-directory: src/ModInstaller.IPC.TypeScript
+        run: pnpm --filter @nexusmods/fomod-installer-ipc test

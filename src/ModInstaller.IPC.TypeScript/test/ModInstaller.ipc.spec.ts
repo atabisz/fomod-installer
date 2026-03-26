@@ -1,7 +1,7 @@
-import test from 'ava';
+import { test, expect } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
+
 import {
   BaseIPCConnection,
   ConnectionStrategy,
@@ -30,7 +30,9 @@ class TestIPCConnection extends BaseIPCConnection {
 
   protected getExecutablePaths(exeName: string): string[] {
     // Look for the executable in the dist folder
-    const distPath = path.join(__dirname, '..', '..', 'dist', exeName);
+    // Resolve relative to package root (1 level up from test/, 2 from dist/test/)
+    const packageRoot = path.resolve(__dirname, fs.existsSync(path.resolve(__dirname, '../package.json')) ? '..' : '../..');
+    const distPath = path.join(packageRoot, 'dist', exeName);
     return [distPath];
   }
 
@@ -151,16 +153,12 @@ const compareInstructions = (actual: any[], expected: Instruction[]): boolean =>
 };
 
 // Check if the executable exists
-const executablePath = path.join(__dirname, '..', '..', 'dist', 'ModInstallerIPC.exe');
+const packageRoot = path.resolve(__dirname, fs.existsSync(path.resolve(__dirname, '../package.json')) ? '..' : '../..');
+const executablePath = path.join(packageRoot, 'dist', 'ModInstallerIPC.exe');
 const executableExists = fs.existsSync(executablePath);
 
 // Run a single test case
-async function runTestCase(t: any, testCase: TestCase): Promise<void> {
-  if (!executableExists) {
-    t.pass(`Skipped: ModInstallerIPC.exe not found at ${executablePath}`);
-    return;
-  }
-
+async function runTestCase(testCase: TestCase): Promise<void> {
   // Extract archive to temp directory - IPC requires files on disk
   const extracted = await extractArchiveToTemp(testCase.archiveFile, testCase.game);
 
@@ -190,7 +188,7 @@ async function runTestCase(t: any, testCase: TestCase): Promise<void> {
 
     // Test if supported
     const supported = await connection.testSupported(['XmlScript', 'CSharpScript']);
-    t.truthy(supported, 'TestSupported should return a result');
+    expect(supported).toBeTruthy();
 
     // Run install
     const result = await connection.install(
@@ -202,20 +200,20 @@ async function runTestCase(t: any, testCase: TestCase): Promise<void> {
     );
 
     // Assertions
-    t.truthy(result, 'Install should return a result');
-    t.truthy(result.instructions, 'Result should have instructions');
+    expect(result).toBeTruthy();
+    expect(result.instructions).toBeTruthy();
 
     // Compare instructions
     const instructionsMatch = compareInstructions(result.instructions, testCase.expectedInstructions);
     if (!instructionsMatch) {
-      t.log('Expected instructions:', testCase.expectedInstructions);
-      t.log('Actual instructions:', result.instructions.map((i: any) => ({
+      console.log('Expected instructions:', testCase.expectedInstructions);
+      console.log('Actual instructions:', result.instructions.map((i: any) => ({
         type: i.type,
         source: i.source,
         destination: i.destination
       })));
     }
-    t.true(instructionsMatch, 'Instructions should match expected');
+    expect(instructionsMatch).toBe(true);
 
   } finally {
     await extracted.cleanup();
@@ -227,13 +225,11 @@ async function runTestCase(t: any, testCase: TestCase): Promise<void> {
 const testCases = getAllTestCases();
 
 if (testCases.length === 0) {
-  test('No C# script test cases found', (t) => {
-    t.pass('No test cases to run - this is expected if no CSharpScript test data files exist');
-  });
+  test.skip('No C# script test cases found', () => {});
 } else {
   for (const testCase of testCases) {
-    test(`${testCase.game}: ${testCase.name}`, async (t) => {
-      await runTestCase(t, testCase);
+    test.skipIf(!executableExists)(`${testCase.game}: ${testCase.name}`, async () => {
+      await runTestCase(testCase);
     });
   }
 }
