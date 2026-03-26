@@ -7,8 +7,11 @@ const Seven = require('node-7z');
 const sevenBin = require('7zip-bin');
 
 // Path to the shared test data directory
-const SHARED_DATA_DIR = path.resolve(__dirname, '../../../../test/TestData/Shared');
-const TEST_DATA_DIR = path.resolve(__dirname, '../../../../test/TestData/Data');
+// Resolve relative to the package root (2 levels up from test/ or 3 from dist/test/)
+const PACKAGE_ROOT = path.resolve(__dirname, fs.existsSync(path.resolve(__dirname, '../package.json')) ? '..' : '../..');
+const REPO_ROOT = path.resolve(PACKAGE_ROOT, '../..');
+const SHARED_DATA_DIR = path.resolve(REPO_ROOT, 'test/TestData/Shared');
+const TEST_DATA_DIR = path.resolve(REPO_ROOT, 'test/TestData/Data');
 
 // Types matching the JSON schema
 export interface SelectedOption {

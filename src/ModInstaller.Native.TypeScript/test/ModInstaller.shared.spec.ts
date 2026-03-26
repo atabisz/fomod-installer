@@ -1,4 +1,4 @@
-import test from 'ava';
+import { test, expect } from 'vitest';
 import { NativeModInstaller, NativeFileSystem, allocAliveCount } from '../src';
 import * as types from '../src/types';
 import {
@@ -101,7 +101,7 @@ const compareInstructions = (actual: types.InstallInstruction[], expected: Instr
 };
 
 // Run a single test case
-async function runTestCase(t: any, testCase: TestCase): Promise<void> {
+async function runTestCase(testCase: TestCase): Promise<void> {
   const archive = await preloadArchive(testCase.archiveFile, testCase.game);
 
   try {
@@ -187,23 +187,23 @@ async function runTestCase(t: any, testCase: TestCase): Promise<void> {
     );
 
     // Assertions
-    t.truthy(result, 'Install should return a result');
-    t.truthy(result!.instructions, 'Result should have instructions');
+    expect(result).toBeTruthy();
+    expect(result!.instructions).toBeTruthy();
 
     // Compare instructions
     const instructionsMatch = compareInstructions(result!.instructions, testCase.expectedInstructions);
     if (!instructionsMatch) {
-      t.log('Expected instructions:', testCase.expectedInstructions);
-      t.log('Actual instructions:', result!.instructions.map(i => ({
+      console.log('Expected instructions:', testCase.expectedInstructions);
+      console.log('Actual instructions:', result!.instructions.map(i => ({
         type: i.type,
         source: i.source,
         destination: i.destination
       })));
     }
-    t.true(instructionsMatch, 'Instructions should match expected');
+    expect(instructionsMatch).toBe(true);
 
     if (isDebug) {
-      t.is(allocAliveCount(), 0, 'No memory leaks');
+      expect(allocAliveCount()).toBe(0);
     }
 
   } finally {
@@ -213,7 +213,7 @@ async function runTestCase(t: any, testCase: TestCase): Promise<void> {
 
 // Generate tests from shared JSON data (supports both .zip and .7z)
 for (const testCase of getAllTestCases()) {
-  test(`${testCase.game}: ${testCase.name}`, async (t) => {
-    await runTestCase(t, testCase);
+  test(`${testCase.game}: ${testCase.name}`, async () => {
+    await runTestCase(testCase);
   });
 }

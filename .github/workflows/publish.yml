@@ -54,12 +54,16 @@ jobs:
         with:
           node-version: ${{ steps.node-version.outputs.NODE_VERSION }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Build native binaries
-        working-directory: src/ModInstaller.Native.TypeScript
         run: |
-          yarn build-native
-          yarn install
-          yarn build-napi
+          pnpm --filter @nexusmods/fomod-installer-native build-native
+          pnpm --filter @nexusmods/fomod-installer-native build-napi
 
       - name: Copy native artifacts to platform dir
         working-directory: src/ModInstaller.Native.TypeScript
@@ -83,6 +87,9 @@ jobs:
     if: ${{ inputs.publish_native }}
     needs: build-native
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - uses: actions/checkout@v6
@@ -101,13 +108,14 @@ jobs:
           node-version: ${{ steps.node-version.outputs.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Install dependencies
-        working-directory: src/ModInstaller.Native.TypeScript
-        run: yarn install --ignore-scripts
+        run: pnpm install --ignore-scripts
 
       - name: Build webpack bundle and declarations
-        working-directory: src/ModInstaller.Native.TypeScript
-        run: yarn build-webpack
+        run: pnpm --filter @nexusmods/fomod-installer-native build-webpack
 
       - name: Download all platform artifacts
         uses: actions/download-artifact@v4
@@ -136,16 +144,17 @@ jobs:
         shell: bash
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            npm publish --dry-run --access public
+            npm publish --dry-run --access public --provenance
           else
-            npm publish --access public
+            npm publish --access public --provenance
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   build-ipc:
     if: ${{ inputs.publish_ipc }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - uses: actions/checkout@v6
@@ -168,11 +177,13 @@ jobs:
           node-version: ${{ steps.node-version.outputs.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Build IPC
-        working-directory: src/ModInstaller.IPC.TypeScript
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install and build IPC
         run: |
-          yarn install
-          yarn build
+          pnpm install
+          pnpm --filter @nexusmods/fomod-installer-ipc build
 
       - name: List dist contents
         working-directory: src/ModInstaller.IPC.TypeScript
@@ -186,9 +197,7 @@ jobs:
         shell: bash
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            npm publish --dry-run --access public
+            npm publish --dry-run --access public --provenance
           else
-            npm publish --access public
+            npm publish --access public --provenance
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

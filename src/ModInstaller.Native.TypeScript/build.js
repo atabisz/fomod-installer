@@ -484,9 +484,6 @@ async function main() {
     if (type === "test") {
       console.log("Running tests");
 
-      // Compile TypeScript tests
-      execCommand("npx tsc -p tsconfig.test.json");
-
       // Copy native binaries to dist for tests (into platform-specific dir)
       const platformDir = `${process.platform}-${process.arch}`;
       const testPlatformDir = path.resolve(`dist/${platformDir}`);
@@ -500,14 +497,14 @@ async function main() {
         copyItem("ModInstaller.Native.so", `dist/${platformDir}/ModInstaller.Native.so`);
       }
 
-      // Run AVA tests
+      // Run Vitest tests
       // On Linux, tolerate exit codes related to crashes during Native AOT cleanup:
       // - 139: SIGSEGV (segfault)
       // - 134: SIGABRT (abort)
       // - 255: General abort/crash
       // This is a known issue: .NET Native AOT libraries don't support clean unloading
       try {
-        execCommand("npx ava");
+        execCommand("npx vitest run");
       } catch (err) {
         const crashExitCodes = [139, 134, 255];
         if (process.platform === 'linux' && crashExitCodes.includes(err.status)) {

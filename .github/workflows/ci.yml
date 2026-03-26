@@ -42,16 +42,13 @@ jobs:
         with:
           node-version: ${{ steps.node-version.outputs.NODE_VERSION }}
 
-      - name: Build IPC
-        working-directory: src/ModInstaller.IPC.TypeScript
-        run: |
-          yarn install
-          yarn build
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
-      - name: Build Native
-        working-directory: src/ModInstaller.Native.TypeScript
-        run: |
-          yarn build-native
-          yarn install
-          yarn build
+      - name: Install dependencies
+        run: pnpm install
 
+      - name: Build all packages
+        run: |
+          pnpm --filter @nexusmods/fomod-installer-ipc build
+          pnpm --filter @nexusmods/fomod-installer-native build

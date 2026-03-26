@@ -1,6 +1,6 @@
 {
   "name": "@nexusmods/fomod-installer-native",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Package of native bindings bundled with TS declarations",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,10 +27,9 @@
     "build-content": "node build.js build-content",
     "test": "node build.js test",
     "test-build": "node build.js test-build",
-    "test-ava": "tsc -p tsconfig.test.json && node -e \"const p=process.platform+'-'+process.arch; require('fs').mkdirSync('dist/'+p, {recursive:true}); require('fs').copyFileSync('build/Release/modinstaller.node', 'dist/'+p+'/modinstaller.node');\" && ava",
+    "test-vitest": "vitest run",
     "watch:build": "tsc -p tsconfig.json -w"
   },
-  "packageManager": "yarn@1.22.19",
   "engines": {
     "node": ">=22"
   },
@@ -40,29 +39,18 @@
     ]
   },
   "devDependencies": {
-    "7zip-bin": "^5.2.0",
-    "@ava/typescript": "^6.0.0",
-    "@types/node": "^22.0.0",
-    "ava": "^6.4.1",
-    "node-7z": "^3.0.0",
-    "node-addon-api": "8.5.0",
-    "node-gyp": "10.0.0",
-    "node-stream-zip": "^1.15.0",
-    "ts-loader": "^9.5.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.0",
-    "vortex-api": "Nexus-Mods/vortex-api",
-    "webpack": "^5.95.0",
-    "webpack-cli": "^5.1.4"
-  },
-  "ava": {
-    "failFast": false,
-    "timeout": "60s",
-    "files": [
-      "dist/test/**/*.spec.js"
-    ],
-    "require": [
-      "./test/_force-exit.js"
-    ]
+    "7zip-bin": "catalog:",
+    "@types/node": "catalog:",
+    "node-7z": "catalog:",
+    "node-addon-api": "catalog:",
+    "node-gyp": "catalog:",
+    "node-stream-zip": "catalog:",
+    "ts-loader": "catalog:",
+    "ts-node": "catalog:",
+    "typescript": "catalog:",
+    "vortex-api": "catalog:",
+    "vitest": "catalog:",
+    "webpack": "catalog:",
+    "webpack-cli": "catalog:"
   }
 }
