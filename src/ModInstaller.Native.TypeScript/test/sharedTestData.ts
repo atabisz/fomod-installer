@@ -7,7 +7,7 @@ const Seven = require('node-7z');
 const sevenBin = require('7zip-bin');
 
 // Path to the shared test data directory
-// Resolve relative to the package root (2 levels up from test/ or 3 from dist/test/)
+// Resolve relative to the package root (2 levels up from test/ or 2 from dist/test/)
 const PACKAGE_ROOT = path.resolve(__dirname, fs.existsSync(path.resolve(__dirname, '../package.json')) ? '..' : '../..');
 const REPO_ROOT = path.resolve(PACKAGE_ROOT, '../..');
 const SHARED_DATA_DIR = path.resolve(REPO_ROOT, 'test/TestData/Shared');

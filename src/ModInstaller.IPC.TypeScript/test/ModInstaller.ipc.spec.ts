@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
+
 import {
   BaseIPCConnection,
   ConnectionStrategy,
@@ -30,7 +30,9 @@ class TestIPCConnection extends BaseIPCConnection {
 
   protected getExecutablePaths(exeName: string): string[] {
     // Look for the executable in the dist folder
-    const distPath = path.join(__dirname, '..', '..', 'dist', exeName);
+    // Resolve relative to package root (1 level up from test/, 2 from dist/test/)
+    const packageRoot = path.resolve(__dirname, fs.existsSync(path.resolve(__dirname, '../package.json')) ? '..' : '../..');
+    const distPath = path.join(packageRoot, 'dist', exeName);
     return [distPath];
   }
 
@@ -151,16 +153,12 @@ const compareInstructions = (actual: any[], expected: Instruction[]): boolean =>
 };
 
 // Check if the executable exists
-const executablePath = path.join(__dirname, '..', '..', 'dist', 'ModInstallerIPC.exe');
+const packageRoot = path.resolve(__dirname, fs.existsSync(path.resolve(__dirname, '../package.json')) ? '..' : '../..');
+const executablePath = path.join(packageRoot, 'dist', 'ModInstallerIPC.exe');
 const executableExists = fs.existsSync(executablePath);
 
 // Run a single test case
 async function runTestCase(testCase: TestCase): Promise<void> {
-  if (!executableExists) {
-    expect(true).toBe(true); // Skipped: ModInstallerIPC.exe not found
-    return;
-  }
-
   // Extract archive to temp directory - IPC requires files on disk
   const extracted = await extractArchiveToTemp(testCase.archiveFile, testCase.game);
 
@@ -227,12 +225,10 @@ async function runTestCase(testCase: TestCase): Promise<void> {
 const testCases = getAllTestCases();
 
 if (testCases.length === 0) {
-  test('No C# script test cases found', () => {
-    expect(true).toBe(true); // No test cases to run
-  });
+  test.skip('No C# script test cases found', () => {});
 } else {
   for (const testCase of testCases) {
-    test(`${testCase.game}: ${testCase.name}`, async () => {
+    test.skipIf(!executableExists)(`${testCase.game}: ${testCase.name}`, async () => {
       await runTestCase(testCase);
     });
   }
