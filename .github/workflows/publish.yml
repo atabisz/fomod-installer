@@ -87,9 +87,10 @@ jobs:
       - name: Install Node.js via Volta
         uses: volta-cli/action@v4
 
-      - name: Setup npm registry
+      - name: Setup npm registry for provenance publishing
         uses: actions/setup-node@v6
         with:
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
@@ -136,9 +137,6 @@ jobs:
   build-ipc:
     if: ${{ inputs.publish_ipc }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
       - uses: actions/checkout@v6
@@ -150,11 +148,6 @@ jobs:
       - name: Install Node.js via Volta
         uses: volta-cli/action@v4
 
-      - name: Setup npm registry
-        uses: actions/setup-node@v6
-        with:
-          registry-url: 'https://registry.npmjs.org'
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
@@ -162,6 +155,35 @@ jobs:
         run: |
           pnpm install
           pnpm --filter @nexusmods/fomod-installer-ipc build
+
+      - name: Upload IPC dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipc-dist
+          path: src/ModInstaller.IPC.TypeScript/dist/
+
+  publish-ipc:
+    if: ${{ inputs.publish_ipc }}
+    needs: build-ipc
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js 24 for npm provenance publishing
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Download IPC dist
+        uses: actions/download-artifact@v4
+        with:
+          name: ipc-dist
+          path: src/ModInstaller.IPC.TypeScript/dist/
 
       - name: List dist contents
         working-directory: src/ModInstaller.IPC.TypeScript
