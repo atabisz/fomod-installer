@@ -1,21 +1,16 @@
-name: Publish NPM Packages
+name: Pack NPM Packages
 
 on:
-  pull_request:
   workflow_dispatch:
     inputs:
-      publish_native:
-        description: 'Publish @nexusmods/fomod-installer-native'
+      pack_native:
+        description: 'Pack @nexusmods/fomod-installer-native'
         type: boolean
         default: true
-      publish_ipc:
-        description: 'Publish @nexusmods/fomod-installer-ipc'
+      pack_ipc:
+        description: 'Pack @nexusmods/fomod-installer-ipc'
         type: boolean
         default: true
-      dry_run:
-        description: 'Dry run (do not actually publish)'
-        type: boolean
-        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,7 +18,7 @@ concurrency:
 
 jobs:
   build-native:
-    if: ${{ inputs.publish_native }}
+    if: ${{ inputs.pack_native }}
     strategy:
       matrix:
         include:
@@ -75,13 +70,10 @@ jobs:
           name: native-${{ matrix.platform }}
           path: src/ModInstaller.Native.TypeScript/artifacts/${{ matrix.platform }}/
 
-  publish-native:
-    if: ${{ inputs.publish_native }}
+  pack-native:
+    if: ${{ inputs.pack_native }}
     needs: build-native
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
       - uses: actions/checkout@v6
@@ -90,7 +82,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -112,8 +103,6 @@ jobs:
         working-directory: src/ModInstaller.Native.TypeScript
         shell: bash
         run: |
-          # download-artifact creates native-win32-x64/ and native-linux-x64/ dirs
-          # Move contents to the expected platform dir names
           for dir in dist/native-*/; do
             platform=$(basename "$dir" | sed 's/^native-//')
             mkdir -p "dist/$platform"
@@ -123,22 +112,19 @@ jobs:
           echo "=== dist/ contents ==="
           find dist/ -type f
 
-      - name: Publish
+      - name: Pack
         working-directory: src/ModInstaller.Native.TypeScript
-        shell: bash
-        run: |
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            npm publish --dry-run --access public --provenance
-          else
-            npm publish --access public --provenance
-          fi
+        run: npm pack
 
-  build-ipc:
-    if: ${{ inputs.publish_ipc }}
+      - name: Upload tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexusmods-fomod-installer-native
+          path: src/ModInstaller.Native.TypeScript/*.tgz
+
+  pack-ipc:
+    if: ${{ inputs.pack_ipc }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
       - uses: actions/checkout@v6
@@ -151,7 +137,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -161,19 +146,12 @@ jobs:
           pnpm install
           pnpm --filter @nexusmods/fomod-installer-ipc build
 
-      - name: List dist contents
+      - name: Pack
         working-directory: src/ModInstaller.IPC.TypeScript
-        shell: bash
-        run: |
-          echo "=== dist/ contents ==="
-          find dist/ -type f
+        run: npm pack
 
-      - name: Publish
-        working-directory: src/ModInstaller.IPC.TypeScript
-        shell: bash
-        run: |
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            npm publish --dry-run --access public --provenance
-          else
-            npm publish --access public --provenance
-          fi
+      - name: Upload tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexusmods-fomod-installer-ipc
+          path: src/ModInstaller.IPC.TypeScript/*.tgz
