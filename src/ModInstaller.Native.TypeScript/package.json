@@ -15,10 +15,13 @@
     "url": "https://github.com/Nexus-Mods/fomod-installer/issues"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "prebuilds/",
+    "install.js",
+    "binding.gyp"
   ],
   "scripts": {
-    "install": "echo 'Skipping auto node-gyp — use build-napi instead'",
+    "install": "node install.js",
     "clean": "node build.js clear",
     "native": "node build.js build-native",
     "build": "node build.js build",
@@ -38,6 +41,9 @@
     "napi_versions": [
       8
     ]
+  },
+  "dependencies": {
+    "node-gyp-build": "^4.8.0"
   },
   "devDependencies": {
     "7zip-bin": "catalog:",

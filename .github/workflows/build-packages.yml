@@ -1,20 +1,8 @@
-name: Publish NPM Packages
+name: Build NPM Packages
 
 on:
+  pull_request:
   workflow_dispatch:
-    inputs:
-      publish_native:
-        description: 'Publish @nexusmods/fomod-installer-native'
-        type: boolean
-        default: true
-      publish_ipc:
-        description: 'Publish @nexusmods/fomod-installer-ipc'
-        type: boolean
-        default: true
-      dry_run:
-        description: 'Dry run (do not actually publish)'
-        type: boolean
-        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,7 +10,6 @@ concurrency:
 
 jobs:
   build-native:
-    if: ${{ inputs.publish_native }}
     strategy:
       matrix:
         include:
@@ -72,25 +59,15 @@ jobs:
           name: native-${{ matrix.platform }}
           path: src/ModInstaller.Native.TypeScript/prebuilds/${{ matrix.platform }}/
 
-  publish-native:
-    if: ${{ inputs.publish_native }}
+  package-native:
     needs: build-native
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
       - uses: actions/checkout@v6
 
       - name: Install Node.js via Volta
         uses: volta-cli/action@v4
-
-      - name: Setup npm registry for provenance publishing
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -112,8 +89,6 @@ jobs:
         working-directory: src/ModInstaller.Native.TypeScript
         shell: bash
         run: |
-          # download-artifact creates native-win32-x64/ and native-linux-x64/ dirs
-          # Move contents to the expected platform dir names
           for dir in prebuilds/native-*/; do
             platform=$(basename "$dir" | sed 's/^native-//')
             mkdir -p "prebuilds/$platform"
@@ -123,18 +98,17 @@ jobs:
           echo "=== prebuilds/ contents ==="
           find prebuilds/ -type f
 
-      - name: Publish
+      - name: Pack tarball
         working-directory: src/ModInstaller.Native.TypeScript
-        shell: bash
-        run: |
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            npm publish --dry-run --access public --provenance
-          else
-            npm publish --access public --provenance
-          fi
+        run: npm pack
+
+      - name: Upload package tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-package
+          path: src/ModInstaller.Native.TypeScript/*.tgz
 
   build-ipc:
-    if: ${{ inputs.publish_ipc }}
     runs-on: ubuntu-latest
 
     steps:
@@ -155,48 +129,12 @@ jobs:
           pnpm install
           pnpm --filter @nexusmods/fomod-installer-ipc build
 
-      - name: Upload IPC dist
+      - name: Pack tarball
+        working-directory: src/ModInstaller.IPC.TypeScript
+        run: npm pack
+
+      - name: Upload package tarball
         uses: actions/upload-artifact@v4
         with:
-          name: ipc-dist
-          path: src/ModInstaller.IPC.TypeScript/dist/
-
-  publish-ipc:
-    if: ${{ inputs.publish_ipc }}
-    needs: build-ipc
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup Node.js 24 for npm provenance publishing
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Download IPC dist
-        uses: actions/download-artifact@v4
-        with:
-          name: ipc-dist
-          path: src/ModInstaller.IPC.TypeScript/dist/
-
-      - name: List dist contents
-        working-directory: src/ModInstaller.IPC.TypeScript
-        shell: bash
-        run: |
-          echo "=== dist/ contents ==="
-          find dist/ -type f
-
-      - name: Publish
-        working-directory: src/ModInstaller.IPC.TypeScript
-        shell: bash
-        run: |
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            npm publish --dry-run --access public --provenance
-          else
-            npm publish --access public --provenance
-          fi
+          name: ipc-package
+          path: src/ModInstaller.IPC.TypeScript/*.tgz
