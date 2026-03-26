@@ -1,6 +1,7 @@
 name: Pack NPM Packages
 
 on:
+  pull_request:
   workflow_dispatch:
     inputs:
       pack_native:
