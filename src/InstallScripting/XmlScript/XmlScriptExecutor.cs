@@ -43,6 +43,7 @@ namespace FomodInstaller.Scripting.XmlScript
         private ConditionStateManager m_csmState;
         private ISet<Option> m_SelectedOptions;
         private OptionsPreset? m_Preset;
+        private bool m_Preselect;
 
         #region Constructors
 
@@ -72,7 +73,7 @@ namespace FomodInstaller.Scripting.XmlScript
         /// <c>false</c> otherwise.</returns>
         /// <exception cref="ArgumentException">Thrown if <paramref name="scpScript"/> is not an
         /// <see cref="XmlScript"/>.</exception>
-        public async override Task<IList<Instruction>> DoExecute(IScript scpScript, string dataPath, object? preset)
+        public async override Task<IList<Instruction>> DoExecute(IScript scpScript, string dataPath, object? preset, bool preselect = false)
         {
             TaskCompletionSource<IList<Instruction>> Source = new TaskCompletionSource<IList<Instruction>>();
             List<InstallableFile> PluginsToActivate = new List<InstallableFile>();
@@ -97,6 +98,8 @@ namespace FomodInstaller.Scripting.XmlScript
                 catch { /* ignore */ }
             }
 
+            m_Preselect = preselect;
+
             if (!(scpScript is XmlScript))
                 throw new ArgumentException("The given script must be of type XmlScript.", scpScript.Type.TypeName);
 
@@ -115,8 +118,9 @@ namespace FomodInstaller.Scripting.XmlScript
             IList<InstallStep> lstSteps = xscScript.InstallSteps;
             fixSteps(lstSteps);
 
-            // If a preset is provided, run headless and avoid all UI IPC
-            if (m_Preset.HasValue)
+            // If a preset is provided and we're not in preselect mode, run headless and avoid all UI IPC.
+            // In preselect mode the preset is used to pre-select options but the dialog is still shown.
+            if (m_Preset.HasValue && !m_Preselect)
             {
                 // Preselect options for every step according to the preset (or recommended/default rules).
                 // Skip invisible steps just like manual mode does - this ensures we don't select options

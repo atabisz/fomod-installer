@@ -66,6 +66,7 @@ public static class Installer
     /// <param name="stopPatterns">patterns matching files or directories that should be at the top of the directory structure.</param>
     /// <param name="scriptPath">The path to the uncompressed install script file, if any.</param>
     /// <param name="preset">preset of options to suggest or activate automatically. The structure of this object depends on the installer format</param>
+    /// <param name="preselect">if true, the preset pre-selects options in the dialog instead of auto-confirming headlessly</param>
     /// <param name="progressDelegate">A delegate to provide progress feedback.</param>
     /// <param name="coreDelegate">A delegate for all the interactions with the js core.</param>
     public static async Task<InstallResult> Install(
@@ -74,6 +75,7 @@ public static class Installer
         string? pluginPath,
         string scriptPath,
         JsonDocument? preset,
+        bool preselect,
         bool validate,
         ProgressDelegate progressDelegate,
         CoreDelegates coreDelegate)
@@ -98,7 +100,7 @@ public static class Installer
 
         if (modToInstall.HasInstallScript)
         {
-            instructions = await ScriptedModInstall(modToInstall, preset, coreDelegate) ??
+            instructions = await ScriptedModInstall(modToInstall, preset, preselect, coreDelegate) ??
                            Instruction.InstallErrorList("warning", "Installer failed (it should have reported an error message)");
         }
         else
@@ -191,12 +193,13 @@ public static class Installer
     private static async Task<List<Instruction>> ScriptedModInstall(
         Mod modArchive,
         JsonDocument? preset,
+        bool preselect,
         CoreDelegates coreDelegate)
     {
         var presetExpando = preset is not null ? JsonUtils.ParseJsonArray(preset) : null;
 
         var sexScript = modArchive.InstallScript.Type.CreateExecutor(modArchive, coreDelegate);
-        return (await sexScript.Execute(modArchive.InstallScript, modArchive.TempPath, presetExpando)).ToList();
+        return (await sexScript.Execute(modArchive.InstallScript, modArchive.TempPath, presetExpando, preselect)).ToList();
     }
 }
 

@@ -79,6 +79,7 @@ public class InstallTests
             data.PluginPath,
             tempDir,
             presetExpando,
+            false,
             data.Validate,
             progressDelegate,
             coreDelegates
