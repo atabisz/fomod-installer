@@ -86,6 +86,9 @@ public sealed record SharedTestCaseRaw
     [JsonPropertyName("preset")]
     public JsonElement? Preset { get; init; }
 
+    [JsonPropertyName("preselect")]
+    public bool Preselect { get; init; }
+
     [JsonPropertyName("validate")]
     public bool Validate { get; init; } = true;
 
@@ -113,6 +116,7 @@ public sealed record SharedTestCase
     public List<string> InstalledPlugins { get; init; } = [];
     public List<SharedSelectedOption>? DialogChoices { get; init; }
     public JsonElement? Preset { get; init; }
+    public bool Preselect { get; init; }
     public bool Validate { get; init; } = true;
     public string? InstallerType { get; init; }
     public string ExpectedMessage { get; init; } = "Installation successful";
@@ -182,6 +186,7 @@ public static class SharedTestDataLoader
                             InstalledPlugins = tc.InstalledPlugins,
                             DialogChoices = tc.DialogChoices,
                             Preset = tc.Preset,
+                            Preselect = tc.Preselect,
                             Validate = tc.Validate,
                             InstallerType = tc.InstallerType,
                             ExpectedMessage = tc.ExpectedMessage,
@@ -243,6 +248,7 @@ public static class SharedTestDataLoader
             InstalledPlugins = testCase.InstalledPlugins,
             DialogChoices = testCase.DialogChoices?.Select(dc => new SelectedOption(dc.StepId, dc.GroupId, dc.PluginIds)),
             Preset = testCase.Preset.HasValue ? JsonDocument.Parse(testCase.Preset.Value.GetRawText()) : null,
+            Preselect = testCase.Preselect,
             Validate = testCase.Validate,
             Message = testCase.ExpectedMessage,
             Instructions = testCase.ExpectedInstructions.Select(i => new InstallInstruction
