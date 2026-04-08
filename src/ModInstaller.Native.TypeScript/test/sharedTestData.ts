@@ -44,6 +44,7 @@ export interface TestCase {
   installedPlugins?: string[];
   dialogChoices?: SelectedOption[];
   preset?: any;
+  preselect?: boolean;
   validate?: boolean;
   installerType?: string;
   expectedMessage?: string;

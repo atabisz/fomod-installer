@@ -206,13 +206,15 @@ namespace Bindings::ModInstaller
             const auto pluginPathRaw = info[2];
             const auto scriptPath = info[3].As<String>();
             const auto presetRaw = info[4];
-            const auto validate = info[5].As<Boolean>();
+            const auto preselect = info[5].As<Boolean>();
+            const auto validate = info[6].As<Boolean>();
 
             const auto filesCopy = CopyWithFree(files.Utf16Value());
             const auto stopPatternsCopy = CopyWithFree(stopPatterns.Utf16Value());
             const auto pluginPathCopy = pluginPathRaw.IsNull() ? NullStringCopy() : CopyWithFree(pluginPathRaw.As<String>().Utf16Value());
             const auto scriptPathCopy = CopyWithFree(scriptPath.Utf16Value());
             const auto presetCopy = presetRaw.IsUndefined() || presetRaw.IsNull() ? NullStringCopy() : CopyWithFree(JSONStringify(presetRaw.As<Object>()));
+            const auto preselectCopy = preselect.Value() ? (uint8_t)1 : (uint8_t)0;
             const auto validateCopy = validate.Value() ? (uint8_t)1 : (uint8_t)0;
 
             auto cbData = CreateResultCallbackData(env, functionName);
@@ -226,6 +228,7 @@ namespace Bindings::ModInstaller
                 pluginPathCopy.get(),
                 scriptPathCopy.get(),
                 presetCopy.get(),
+                preselectCopy,
                 validateCopy,
                 cbData,
                 HandleJsonResultCallback);

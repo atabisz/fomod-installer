@@ -52,6 +52,7 @@ class TestIPCConnection extends BaseIPCConnection {
     pluginPath: string,
     scriptPath: string,
     fomodChoices: any,
+    preselect: boolean,
     validate: boolean
   ): Promise<{ message: string; instructions: any[] }> {
     return this.sendCommand('Install', {
@@ -60,6 +61,7 @@ class TestIPCConnection extends BaseIPCConnection {
       pluginPath,
       scriptPath,
       fomodChoices,
+      preselect,
       validate
     }, 60000); // 60 second timeout for install
   }
@@ -196,6 +198,7 @@ async function runTestCase(testCase: TestCase): Promise<void> {
       testCase.pluginPath,
       extracted.tempDir, // scriptPath - point to temp dir where files are extracted
       testCase.preset ?? null,
+      testCase.preselect ?? false,
       testCase.validate ?? true
     );
 
