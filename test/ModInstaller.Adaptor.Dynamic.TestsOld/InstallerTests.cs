@@ -61,7 +61,7 @@ namespace FomodInstaller.ModInstaller.Tests
 			*/
 
 			Installer installer = new Installer();
-			var actual = await installer.Install(modArchiveFileList, gameSpecificStopFolders, "", destinationPath, null, true, progressDelegate, dynamicCoreDelegate);
+			var actual = await installer.Install(modArchiveFileList, gameSpecificStopFolders, "", destinationPath, null, false, true, progressDelegate, dynamicCoreDelegate);
 
 			// Xunit test
 			Assert.Null(actual);

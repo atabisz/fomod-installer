@@ -78,6 +78,7 @@ namespace FomodInstaller.ModInstaller
                                                                        string pluginPath,
                                                                        string scriptPath,
                                                                        object? preset,
+                                                                       bool preselect,
                                                                        bool validate,
                                                                        ProgressDelegate progressDelegate,
                                                                        CoreDelegates coreDelegate)
@@ -111,7 +112,7 @@ namespace FomodInstaller.ModInstaller
                 }
                 else
                 {
-                    Instructions = await ScriptedModInstall(modToInstall, preset, progressDelegate, coreDelegate);
+                    Instructions = await ScriptedModInstall(modToInstall, preset, preselect, progressDelegate, coreDelegate);
                 }
                 if (Instructions == null)
                 {
@@ -228,10 +229,10 @@ namespace FomodInstaller.ModInstaller
         /// <param name="prefixPath">base path for all relative paths</param>
         /// <param name="progressDelegate">A delegate to provide progress feedback.</param>
         /// <param name="coreDelegate">A delegate for all the interactions with the js core.</param>
-        protected async Task<IList<Instruction>> ScriptedModInstall(Mod modArchive, object? preset, ProgressDelegate progressDelegate, CoreDelegates coreDelegate)
+        protected async Task<IList<Instruction>> ScriptedModInstall(Mod modArchive, object? preset, bool preselect, ProgressDelegate progressDelegate, CoreDelegates coreDelegate)
         {
             IScriptExecutor sexScript = modArchive.InstallScript.Type.CreateExecutor(modArchive, coreDelegate);
-            return await sexScript.Execute(modArchive.InstallScript, modArchive.TempPath, preset);
+            return await sexScript.Execute(modArchive.InstallScript, modArchive.TempPath, preset, preselect);
         }
 
         #endregion

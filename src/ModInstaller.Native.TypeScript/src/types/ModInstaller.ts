@@ -19,7 +19,7 @@ export interface ModInstallerConstructor {
 
 export interface ModInstaller {
   install(files: string[], stopPatterns: string[], pluginPath: string, scriptPath: string,
-    preset: any, validate: boolean): Promise<InstallResult | null>;
+    preset: any, preselect: boolean, validate: boolean): Promise<InstallResult | null>;
 }
 
 export interface IModInstallerExtension {

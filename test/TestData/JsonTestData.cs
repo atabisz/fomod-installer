@@ -85,6 +85,9 @@ public record JsonTestCase
     [JsonPropertyName("preset")]
     public JsonElement? Preset { get; init; }
 
+    [JsonPropertyName("preselect")]
+    public bool? Preselect { get; init; }
+
     [JsonPropertyName("validate")]
     public bool? Validate { get; init; }
 
@@ -197,6 +200,7 @@ public static class JsonTestDataLoader
             DialogChoices = testCase.DialogChoices?.Select(c => new SelectedOption(c.StepId, c.GroupId, c.PluginIds)),
             Preset = preset,
             InstalledPlugins = testCase.InstalledPlugins?.ToList() ?? [],
+            Preselect = testCase.Preselect ?? false,
             Validate = testCase.Validate ?? true,
             Message = testCase.ExpectedMessage ?? "Installation successful",
             Instructions = testCase.ExpectedInstructions.Select(i => new InstallInstruction

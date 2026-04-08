@@ -137,6 +137,7 @@ public static unsafe partial class Bindings
         [IsConst<IsPtrConst>] param_string* p_plugin_path,
         [IsConst<IsPtrConst>] param_string* p_script_path,
         [IsConst<IsPtrConst>] param_json* p_preset,
+        [IsConst<IsPtrConst>] param_bool preselect,
         [IsConst<IsPtrConst>] param_bool validate,
         param_ptr* p_callback_handler,
         delegate* unmanaged[Cdecl]<param_ptr*, return_value_json*, void> p_callback)
@@ -160,7 +161,7 @@ public static unsafe partial class Bindings
 
             var progressDelegate = new ProgressDelegate((progress) => { });
 
-            Installer.Install(modArchiveFileList.ToList(), stopPatterns.ToList(), pluginPath, scriptPath, preset, validate, progressDelegate, handler).ContinueWith(result =>
+            Installer.Install(modArchiveFileList.ToList(), stopPatterns.ToList(), pluginPath, scriptPath, preset, preselect, validate, progressDelegate, handler).ContinueWith(result =>
             {
 #if DEBUG
                 using var logger = LogMethod($"{nameof(Install)}_Callback");

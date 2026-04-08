@@ -183,6 +183,7 @@ async function runTestCase(testCase: TestCase): Promise<void> {
       testCase.pluginPath,
       '', // scriptPath - empty, auto-detected
       testCase.preset ?? null,
+      testCase.preselect ?? false,
       testCase.validate ?? true
     );
 

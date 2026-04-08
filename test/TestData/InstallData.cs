@@ -41,6 +41,7 @@ public sealed record InstallData
     public required string AppVersion { get; init; }
     public required string GameVersion { get; init; }
     public required string ExtenderVersion { get; init; }
+    public required bool Preselect { get; init; }
     public required bool Validate { get; init; }
     public required string Message { get; init; }
     public required List<InstallInstruction> Instructions { get; init; }

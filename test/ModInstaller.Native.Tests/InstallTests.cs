@@ -56,6 +56,7 @@ public sealed partial class InstallTests : BaseTests
         param_string* p_plugin_path,
         param_string* p_script_path,
         param_json* p_preset,
+        param_bool preselect,
         param_bool validate,
         param_ptr* p_callback_handler,
         delegate* unmanaged[Cdecl]<param_ptr*, return_value_json*, void> p_callback);
@@ -123,6 +124,7 @@ public sealed partial class InstallTests : BaseTests
             pluginPath,
             scriptPath,
             data.Preset is null ? (param_json*) null : preset,
+            data.Preselect,
             data.Validate,
             (param_ptr*) tcsPtr,
             &InstallCallback));
