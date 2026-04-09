@@ -460,16 +460,18 @@ export async function killProcess(pid: number): Promise<boolean> {
 
 **A2 mitigation:** Use `pgrep -f ModInstallerIPC` instead of `pgrep ModInstallerIPC`. The `-f` flag matches against the full command-line string rather than just the process name (which is capped at 15 chars in Linux). This guarantees a match even if the process name is truncated.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should build.js be updated to support platform-aware builds, or is CI-direct dotnet sufficient?**
    - What we know: `build.js` is used by local developers via `pnpm build`; CI currently uses `pnpm build` which invokes `build.js`
    - What's unclear: Whether local Linux developers need self-contained builds, or whether framework-dependent (requires .NET installed) is acceptable for local dev
    - Recommendation: Keep `build.js` as-is for local dev (framework-dependent is fine if .NET is installed); CI calls `dotnet publish` directly with self-contained flags
+   - **RESOLVED:** CI calls `dotnet publish` directly with self-contained flags (see Plan 02-01, Task 2). `build.js` unchanged — local dev uses framework-dependent build.
 
 2. **pgrep -f vs pgrep (process name vs full command line)?**
    - What we know: `pgrep ModInstallerIPC` may fail if the name is truncated to 15 chars in `/proc/comm`; `pgrep -f ModInstallerIPC` matches the full argv[0] which won't be truncated
    - Recommendation: Use `pgrep -f ModInstallerIPC` for robustness (A2 mitigation above)
+   - **RESOLVED:** `pgrep -f ModInstallerIPC` used in Plan 02-02, Task 2 for robustness against kernel name truncation.
 
 ## Sources
 
