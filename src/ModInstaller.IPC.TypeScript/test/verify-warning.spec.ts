@@ -30,10 +30,11 @@ class VerifyConnection extends BaseIPCConnection {
 
   protected getExecutablePaths(_exeName: string): string[] {
     const packageRoot = path.resolve(__dirname, fs.existsSync(path.resolve(__dirname, '../package.json')) ? '..' : '../..');
-    // On Linux the binary is a native ELF (not Mono) — use the extension-less name to
-    // avoid RegularProcessLauncher's .exe → mono detection, which doesn't apply here.
     const exeName = process.platform === 'win32' ? 'ModInstallerIPC.exe' : 'ModInstallerIPC';
-    return [path.join(packageRoot, 'dist', exeName)];
+    if (process.platform === 'win32') {
+      return [path.join(packageRoot, 'dist', exeName)];
+    }
+    return [path.join(packageRoot, 'dist', 'linux-x64', exeName)];
   }
 
   public setArchiveFiles(files: string[]): void {
@@ -63,7 +64,9 @@ class VerifyConnection extends BaseIPCConnection {
 const REPO_ROOT = path.resolve(__dirname, '../../..');
 const archivePath = path.join(REPO_ROOT, 'test/TestData/Data/CSharpTestCase.zip');
 const packageRoot = path.resolve(__dirname, fs.existsSync(path.resolve(__dirname, '../package.json')) ? '..' : '../..');
-const executablePath = path.join(packageRoot, 'dist', 'ModInstallerIPC.exe');
+const executablePath = process.platform === 'win32'
+  ? path.join(packageRoot, 'dist', 'ModInstallerIPC.exe')
+  : path.join(packageRoot, 'dist', 'linux-x64', 'ModInstallerIPC');
 const executableExists = fs.existsSync(executablePath);
 
 test.skipIf(!executableExists)(
