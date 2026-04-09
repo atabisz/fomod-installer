@@ -102,6 +102,21 @@ namespace FomodInstaller.ModInstaller
 
             progressDelegate(50);
 
+            // If no script type was resolved, check whether the archive contains a C# script
+            // file that we couldn't handle (e.g., CSharpScript not registered on non-Windows).
+            // Emit a warning so the caller knows functionality was skipped.
+            if (ScriptType == null)
+            {
+                bool hasCSharpScript = modArchiveFileList.Any(f =>
+                    Path.GetFileName(f).Equals("script.cs", StringComparison.OrdinalIgnoreCase)
+                    && Path.GetFileName(Path.GetDirectoryName(f))
+                        .Contains("fomod", StringComparison.OrdinalIgnoreCase));
+                if (hasCSharpScript)
+                {
+                    Instructions.Add(Instruction.UnsupportedFunctionalityWarning("CSharpScript"));
+                }
+            }
+
             if (modToInstall.HasInstallScript)
             {
                 if (ScriptType.TypeId == "ModScript")
