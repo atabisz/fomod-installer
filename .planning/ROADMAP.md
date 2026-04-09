@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 1 plan
 
 Plans:
-- [ ] 01-01-PLAN.md -- Path normalization, archive-case emission, and CSharpScript OS guard (PATH-01, PATH-02, GUARD-01)
+- [x] 01-01-PLAN.md -- Path normalization, archive-case emission, and CSharpScript OS guard (PATH-01, PATH-02, GUARD-01)
 
 ### Phase 2: IPC Linux Pipeline
 **Goal**: `@nexusmods/fomod-installer-ipc` ships a self-contained ELF binary with correct execute permissions, and the TypeScript launcher resolves the correct binary on both Linux and Windows
@@ -39,8 +39,11 @@ Plans:
   1. `npm pack` of the IPC package includes `dist/linux-x64/ModInstallerIPC` (ELF, executable bit set) produced by the `ubuntu-22.04` CI runner without manual intervention
   2. On Linux, `BaseIPCConnection` resolves and spawns `dist/linux-x64/ModInstallerIPC` without hitting `ENOENT` or `EACCES`; on Windows the existing `dist/win32-x64/ModInstallerIPC.exe` path still resolves
   3. `cleanup-processes.ts` completes without throwing `ENOENT` on Linux — orphaned IPC processes are detected via `pgrep` and terminated via `kill`
-**Plans**: TBD
-**UI hint**: no
+**Plans:** 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md -- CI matrix expansion and build-native ubuntu-22.04 pin (IPC-01)
+- [ ] 02-02-PLAN.md -- TypeScript platform-aware launcher, Mono removal, and cross-platform cleanup (IPC-02, IPC-03)
 
 ### Phase 3: UX Hardening
 **Goal**: Callers receive actionable, OS-specific context when C# script mods are encountered, path traversal safety is validated on Linux, and Linux limitations are documented for downstream consumers
@@ -60,5 +63,5 @@ Phases execute in numeric order: 1 -> 2 -> 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. C# Correctness | 0/1 | Planned | - |
-| 2. IPC Linux Pipeline | 0/TBD | Not started | - |
+| 2. IPC Linux Pipeline | 0/2 | Planned | - |
 | 3. UX Hardening | 0/TBD | Not started | - |
