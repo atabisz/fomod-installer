@@ -5,7 +5,7 @@ milestone_name: milestone
 status: planning
 stopped_at: Phase 1 context gathered
 last_updated: "2026-04-09T03:43:03.423Z"
-last_activity: 2026-04-09 — Roadmap created, 3 phases defined, 9/9 requirements mapped
+last_activity: 2026-04-09 - Completed quick task 260409-k57: Fix Phase 1 verification gap
 progress:
   total_phases: 3
   completed_phases: 0
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-09)
 Phase: 1 of 3 (C# Correctness)
 Plan: 0 of TBD in current phase
 Status: Ready to plan
-Last activity: 2026-04-09 — Roadmap created, 3 phases defined, 9/9 requirements mapped
+Last activity: 2026-04-09 - Completed quick task 260409-k57: Fix Phase 1 verification gap: emit UnsupportedFunctionalityWarning in Installer.cs when GetScriptType returns null but ScriptFilePath is non-null (C# script present on non-Windows)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -67,6 +67,12 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 None yet.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260409-k57 | Fix Phase 1 verification gap: emit UnsupportedFunctionalityWarning in Installer.cs | 2026-04-09 | a53ae6b | [260409-k57-fix-phase-1-verification-gap-emit-unsupp](./quick/260409-k57-fix-phase-1-verification-gap-emit-unsupp/) |
 
 ### Blockers/Concerns
 
