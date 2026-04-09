@@ -29,8 +29,8 @@ FOMOD mods install correctly on Linux/Vortex with no silent partial installs and
 - [ ] Parse-time path normalization: call `TextUtil.NormalizePath()` on every `source`/`destination` extracted from XML in all parser classes
 - [ ] Case-correct path emission: emit real matched path (archive case) instead of XML-verbatim path from `Mod.cs`
 - [ ] CSharpScript runtime OS guard: gate C# script registration behind `RuntimeInformation.IsOSPlatform(OSPlatform.Windows)` check
-- [ ] Linux IPC CI build: add Linux runner to `.github/workflows/build-packages.yml` publishing self-contained ELF binary
-- [ ] Platform binary selection in `RegularProcessLauncher.ts`: resolve correct binary path by `process.platform`
+- ✓ Linux IPC CI build: matrix `build-ipc` job on ubuntu-22.04 producing self-contained ELF — Validated in Phase 2: IPC Linux Pipeline
+- ✓ Platform binary selection in TypeScript launcher: `findExecutable()`/`getExecutablePaths()` resolve platform-specific path; Mono detection removed — Validated in Phase 2: IPC Linux Pipeline
 - [ ] C# script limitation documented in `README.md` for Linux users
 - [ ] Linux path edge-case unit tests for `..` traversal via `../` and `..\` sequences
 
@@ -61,7 +61,7 @@ Architecture under Proton: Vortex runs as native Linux Electron → spawns fomod
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Self-contained IPC binary for Linux | Removes Mono dependency; CI already builds with `net9.0` (not `net9.0-windows`) | — Pending |
+| Self-contained IPC binary for Linux | Removes Mono dependency; CI already builds with `net9.0` (not `net9.0-windows`) | ✓ Delivered — Phase 2 |
 | Parse-time normalization (not emit-time) | Fixes the problem at the earliest point; downstream code gets clean paths | — Pending |
 | Emit real archive case from Mod.cs | Correct approach vs Vortex's `resolvePathCase()` workaround which scans disk | — Pending |
 | Fork first, PR later | Allows iterative work and testing before splitting into upstream-ready diffs | — Pending |
@@ -84,4 +84,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-09 after initialization*
+*Last updated: 2026-04-09 — Phase 2 complete (IPC Linux Pipeline)*
