@@ -42,8 +42,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- CI matrix expansion and build-native ubuntu-22.04 pin (IPC-01)
-- [ ] 02-02-PLAN.md -- TypeScript platform-aware launcher, Mono removal, and cross-platform cleanup (IPC-02, IPC-03)
+- [x] 02-01-PLAN.md -- CI matrix expansion and build-native ubuntu-22.04 pin (IPC-01)
+- [x] 02-02-PLAN.md -- TypeScript platform-aware launcher, Mono removal, and cross-platform cleanup (IPC-02, IPC-03)
 
 ### Phase 3: UX Hardening
 **Goal**: Callers receive actionable, OS-specific context when C# script mods are encountered, path traversal safety is validated on Linux, and Linux limitations are documented for downstream consumers
