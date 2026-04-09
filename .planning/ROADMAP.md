@@ -26,7 +26,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. A FOMOD XML with Windows-style backslash paths (`source="Data\Textures\foo.dds"`) installs files at the correct Linux path after path normalization runs across all versioned Parser*.cs files
   2. A FOMOD mod whose XML lists a file as `Foo.esp` but the archive contains `foo.esp` installs the file with the archive's real case, not the XML-verbatim spelling
   3. Building or running the IPC process on Linux with a C# script FOMOD emits an `UnsupportedFunctionalityWarning` instruction instead of throwing a Windows-assembly load exception
-**Plans**: TBD
+**Plans:** 1 plan
+
+Plans:
+- [ ] 01-01-PLAN.md -- Path normalization, archive-case emission, and CSharpScript OS guard (PATH-01, PATH-02, GUARD-01)
 
 ### Phase 2: IPC Linux Pipeline
 **Goal**: `@nexusmods/fomod-installer-ipc` ships a self-contained ELF binary with correct execute permissions, and the TypeScript launcher resolves the correct binary on both Linux and Windows
@@ -52,10 +55,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3
+Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. C# Correctness | 0/TBD | Not started | - |
+| 1. C# Correctness | 0/1 | Planned | - |
 | 2. IPC Linux Pipeline | 0/TBD | Not started | - |
 | 3. UX Hardening | 0/TBD | Not started | - |
