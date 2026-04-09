@@ -56,8 +56,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Warning payload enrichment: reason and platform fields on Instruction record (UX-01)
-- [ ] 03-02-PLAN.md -- IsSafeFilePath traversal tests and README Linux notes (UX-02, UX-03)
+- [x] 03-01-PLAN.md -- Warning payload enrichment: reason and platform fields on Instruction record (UX-01)
+- [x] 03-02-PLAN.md -- IsSafeFilePath traversal tests and README Linux notes (UX-02, UX-03)
 
 ## Progress
 
