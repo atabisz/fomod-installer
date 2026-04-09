@@ -31,8 +31,8 @@ FOMOD mods install correctly on Linux/Vortex with no silent partial installs and
 - [ ] CSharpScript runtime OS guard: gate C# script registration behind `RuntimeInformation.IsOSPlatform(OSPlatform.Windows)` check
 - ✓ Linux IPC CI build: matrix `build-ipc` job on ubuntu-22.04 producing self-contained ELF — Validated in Phase 2: IPC Linux Pipeline
 - ✓ Platform binary selection in TypeScript launcher: `findExecutable()`/`getExecutablePaths()` resolve platform-specific path; Mono detection removed — Validated in Phase 2: IPC Linux Pipeline
-- [ ] C# script limitation documented in `README.md` for Linux users
-- [ ] Linux path edge-case unit tests for `..` traversal via `../` and `..\` sequences
+- ✓ C# script limitation documented in `README.md` for Linux users — Validated in Phase 3: UX Hardening
+- ✓ Linux path edge-case unit tests for `..` traversal via `../` and `..\` sequences — Validated in Phase 3: UX Hardening
 
 ### Out of Scope
 
@@ -84,4 +84,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-09 — Phase 2 complete (IPC Linux Pipeline)*
+*Last updated: 2026-04-09 — Phase 3 complete (UX Hardening). All 3 milestone phases done. UnsupportedFunctionalityWarning now carries reason/platform fields; path traversal tests added for Linux; README Linux notes section documented.*
