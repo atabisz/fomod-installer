@@ -12,7 +12,7 @@ FOMOD mods install correctly on Linux/Vortex with no silent partial installs and
 
 ### Validated
 
-<!-- Capabilities confirmed working in the existing codebase -->
+<!-- All v1.0 requirements shipped -->
 
 - ✓ XML FOMOD script parsing and execution (versions 1.0–5.0) — existing
 - ✓ Dual-path architecture: Native AOT (XML-only) + IPC (.NET process, full C# support on Windows) — existing
@@ -21,18 +21,21 @@ FOMOD mods install correctly on Linux/Vortex with no silent partial installs and
 - ✓ Native AOT `linux-x64` build via `ModInstaller.Native.csproj` — existing
 - ✓ `TextUtil.NormalizePath()` utility with `alternateSeparators` support — existing
 - ✓ `UnsupportedFunctionalityWarning()` instruction type for unsupported script types — existing
+- ✓ Parse-time path normalization: `TextUtil.NormalizePath()` on every `source`/`destination` in all parser classes — Validated in Phase 1: C# Correctness
+- ✓ Case-correct path emission: `matchedFiles[0]` (archive case) used instead of XML-verbatim path in `XmlScriptInstaller.cs` — Validated in Phase 1: C# Correctness
+- ✓ CSharpScript runtime OS guard: `RuntimeInformation.IsOSPlatform(OSPlatform.Windows)` wraps both registration sites in `ModFormatManager.cs` — Validated in Phase 1: C# Correctness
+- ✓ Linux IPC CI build: matrix `build-ipc` job on ubuntu-22.04 producing self-contained ELF — Validated in Phase 2: IPC Linux Pipeline
+- ✓ Platform binary selection in TypeScript launcher: `findExecutable()`/`getExecutablePaths()` resolve platform-specific path; Mono detection removed — Validated in Phase 2: IPC Linux Pipeline
+- ✓ Cross-platform process cleanup: `pgrep`/`kill` on Linux, `tasklist`/`taskkill` on Windows — Validated in Phase 2: IPC Linux Pipeline
+- ✓ `UnsupportedFunctionalityWarning` carries `reason` and `platform` fields for OS-specific caller UX — Validated in Phase 3: UX Hardening
+- ✓ `IsSafeFilePath()` traversal tests for `../` and `..\` on Linux — Validated in Phase 3: UX Hardening
+- ✓ `README.md` Linux notes: C# limitation, native AOT recommendation, IPC ELF availability, removable Vortex workarounds — Validated in Phase 3: UX Hardening
 
 ### Active
 
-<!-- Fixes and additions being built in this fork -->
+<!-- Next milestone work — not yet planned -->
 
-- [ ] Parse-time path normalization: call `TextUtil.NormalizePath()` on every `source`/`destination` extracted from XML in all parser classes
-- [ ] Case-correct path emission: emit real matched path (archive case) instead of XML-verbatim path from `Mod.cs`
-- [ ] CSharpScript runtime OS guard: gate C# script registration behind `RuntimeInformation.IsOSPlatform(OSPlatform.Windows)` check
-- ✓ Linux IPC CI build: matrix `build-ipc` job on ubuntu-22.04 producing self-contained ELF — Validated in Phase 2: IPC Linux Pipeline
-- ✓ Platform binary selection in TypeScript launcher: `findExecutable()`/`getExecutablePaths()` resolve platform-specific path; Mono detection removed — Validated in Phase 2: IPC Linux Pipeline
-- ✓ C# script limitation documented in `README.md` for Linux users — Validated in Phase 3: UX Hardening
-- ✓ Linux path edge-case unit tests for `..` traversal via `../` and `..\` sequences — Validated in Phase 3: UX Hardening
+(None — v1.0 complete. Next milestone TBD via `/gsd-new-milestone`.)
 
 ### Out of Scope
 
@@ -46,9 +49,14 @@ This is a brownfield fork of `Nexus-Mods/fomod-installer` at `581d5a8`. The full
 
 Architecture under Proton: Vortex runs as native Linux Electron → spawns fomod-installer (native Linux, .NET AOT or IPC process) → operates on Linux ext4 filesystem (case-sensitive). The game process is under Proton's case-insensitive layer but fomod-installer is not.
 
-**Vortex-side workarounds currently in place** (to be removed after fork PRs land):
-- `replaceAll("\\", "/")` on instructions in `InstallManager.ts:7923-7924` — blocked on parse-time normalization fix
-- `resolvePathCase()` in `InstallManager.ts:7929` — blocked on case emit fix (keep as safety net)
+**v1.0 shipped 2026-04-09.** All 9 v1 requirements delivered across 3 phases (5 plans, 11 tasks).
+
+**Vortex-side workarounds that can now be removed** (after fork PRs land in upstream):
+- `replaceAll("\\", "/")` at `InstallManager.ts:7923-7924` — unblocked by PATH-01 (parse-time normalization)
+- `resolvePathCase()` at `InstallManager.ts:7929` — unblocked by PATH-02 (archive-case emission); keep as safety net per original analysis
+
+**Known pre-existing test failures** (out of scope, present on upstream base `581d5a8`):
+- `FileTreeTests`: 3 failing tests (`ParsesInputTree`, `CanSelectToplevel`, `CanSelectAnywhere`) — collection count mismatches in upstream code, not caused by fork changes
 
 ## Constraints
 
@@ -62,9 +70,14 @@ Architecture under Proton: Vortex runs as native Linux Electron → spawns fomod
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Self-contained IPC binary for Linux | Removes Mono dependency; CI already builds with `net9.0` (not `net9.0-windows`) | ✓ Delivered — Phase 2 |
-| Parse-time normalization (not emit-time) | Fixes the problem at the earliest point; downstream code gets clean paths | — Pending |
-| Emit real archive case from Mod.cs | Correct approach vs Vortex's `resolvePathCase()` workaround which scans disk | — Pending |
-| Fork first, PR later | Allows iterative work and testing before splitting into upstream-ready diffs | — Pending |
+| Parse-time normalization (not emit-time) | Fixes the problem at the earliest point; downstream code gets clean paths | ✓ Delivered — Phase 1 |
+| Emit real archive case from Mod.cs | Correct approach vs Vortex's `resolvePathCase()` workaround which scans disk | ✓ Delivered — Phase 1 |
+| Fork first, PR later | Allows iterative work and testing before splitting into upstream-ready diffs | ✓ Delivered — v1.0 complete |
+| Positive Windows check (`IsOSPlatform.Windows`) not negative Linux check | Unknown platforms also skip CSharpScript safely | ✓ Delivered — Phase 1 |
+| Windows IPC binary stays at `dist/ModInstallerIPC.exe` (flat path) | Backward compatibility with existing consumers | ✓ Delivered — Phase 2 |
+| `chmod +x` as CI step, not postinstall script | Avoids pnpm workspace postinstall complexity on consumer side | ✓ Delivered — Phase 2 |
+| `pgrep -f` (not `-x`) for process detection | Avoids 15-char `/proc/comm` truncation on Linux | ✓ Delivered — Phase 2 |
+| `reason`/`platform` as nullable `string?` on Instruction | JSON backward-compat with existing consumers that omit these fields | ✓ Delivered — Phase 3 |
 
 ## Evolution
 
@@ -84,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-09 — Phase 3 complete (UX Hardening). All 3 milestone phases done. UnsupportedFunctionalityWarning now carries reason/platform fields; path traversal tests added for Linux; README Linux notes section documented.*
+*Last updated: 2026-04-09 after v1.0 milestone — all requirements validated, all phases complete.*

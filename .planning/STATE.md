@@ -1,10 +1,10 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
-status: executing
-stopped_at: Phase 3 context gathered
-last_updated: "2026-04-09T10:56:10.653Z"
+milestone_name: Linux Compatibility
+status: milestone_complete
+stopped_at: v1.0 milestone archived
+last_updated: "2026-04-09T11:04:01.738Z"
 last_activity: 2026-04-09
 progress:
   total_phases: 3
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-09)
 
 **Core value:** FOMOD mods install correctly on Linux/Vortex with no silent partial installs and no Vortex-side workarounds required.
-**Current focus:** Phase 02 — ipc-linux-pipeline
+**Current focus:** v1.0 complete — planning next milestone
 
 ## Current Position
 
-Phase: 03
-Plan: Not started
-Status: Executing Phase 02
+Phase: All complete (3/3)
+Plan: All complete (5/5)
+Status: Milestone v1.0 archived
 Last activity: 2026-04-09
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -77,12 +77,10 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 2]: Audit `build-native` job for `ubuntu-latest` GLIBC mismatch — may need to pin to `ubuntu-22.04` in same PR
-- [Phase 2]: Decide `chmod +x` CI-only vs + postinstall based on Vortex pnpm workspace `postinstall` behavior
-- [Phase 2]: Verify Windows IPC path regression after TypeScript platform-selection changes land
+None — v1.0 complete. All Phase 2 blockers resolved during execution.
 
 ## Session Continuity
 
-Last session: 2026-04-09T08:20:31.377Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-ux-hardening/03-CONTEXT.md
+Last session: 2026-04-09
+Stopped at: v1.0 milestone archived
+Next: `/gsd-new-milestone` to plan v1.1
