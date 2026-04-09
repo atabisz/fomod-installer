@@ -140,7 +140,7 @@ namespace FomodInstaller.ModInstaller
 
             if (emitCSharpScriptWarning)
             {
-                Instructions.Insert(0, Instruction.UnsupportedFunctionalityWarning("CSharpScript"));
+                Instructions.Insert(0, Instruction.UnsupportedFunctionalityWarning("CSharpScript", "CSharpScript not supported on Linux", "linux"));
             }
  
             // f***ing ugly hack, but this is in NMM so...
