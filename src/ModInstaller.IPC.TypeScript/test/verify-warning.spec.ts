@@ -47,7 +47,7 @@ class VerifyConnection extends BaseIPCConnection {
     fomodChoices: null,
     preselect: boolean,
     validate: boolean,
-  ): Promise<{ message: string; instructions: Array<{ type: string; source?: string; destination?: string }> }> {
+  ): Promise<{ message: string; instructions: Array<{ type: string; source?: string; destination?: string; reason?: string; platform?: string }> }> {
     return this.sendCommand('Install', {
       files: this.archiveFiles,
       stopPatterns,
@@ -136,12 +136,14 @@ test.skipIf(!executableExists)(
       console.log('Instructions:', JSON.stringify(result.instructions, null, 2));
 
       const warning = result.instructions.find(
-        (i: { type: string; source?: string }) =>
+        (i: { type: string; source?: string; reason?: string; platform?: string }) =>
           i.type === 'unsupported' && i.source === 'CSharpScript',
       );
 
       expect(warning).toBeTruthy();
-      console.log('✅ UnsupportedFunctionalityWarning("CSharpScript") present');
+      expect(warning!.reason).toBe('CSharpScript not supported on Linux');
+      expect(warning!.platform).toBe('linux');
+      console.log('UnsupportedFunctionalityWarning("CSharpScript") present with reason=%s platform=%s', warning!.reason, warning!.platform);
     } finally {
       await conn.dispose();
       fs.rmSync(tempDir, { recursive: true, force: true });
