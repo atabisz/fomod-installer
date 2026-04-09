@@ -131,18 +131,20 @@ namespace FomodInstaller.Scripting.XmlScript
             }
             else
             {
-                string strSource = NormalizeSeparators(Path.Combine(ModArchive.Prefix, installableFile.Source));
-                int count = ModArchive.GetFileList(strSource, true, false).Count;
+                string strSourceXml = NormalizeSeparators(Path.Combine(ModArchive.Prefix, installableFile.Source));
+                IList<string> matchedFiles = ModArchive.GetFileList(strSourceXml, true, false);
+                int count = matchedFiles.Count;
                 if (count == 1)
                 {
+                    string strSource = matchedFiles[0];
                     string strDest = NormalizeSeparators(installableFile.Destination);
                     InstallFileFromMod(strSource, strDest, installableFile.Priority + priorityOffset);
                 }
                 else
                 {
                     modInstallInstructions.Add(Instruction.InstallError("warning", count == 0
-                        ? "Source doesn't match any files: \"" + strSource + "\""
-                        : "Source matches a directory, was supposed to be a file: \"" + strSource + "\""));
+                        ? "Source doesn't match any files: \"" + strSourceXml + "\""
+                        : "Source matches a directory, was supposed to be a file: \"" + strSourceXml + "\""));
                 }
             }
 
