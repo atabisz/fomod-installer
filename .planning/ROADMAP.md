@@ -53,7 +53,11 @@ Plans:
   1. An `UnsupportedFunctionalityWarning` instruction for a C# script FOMOD carries a `reason` string (e.g. `"CSharpScript not supported on Linux"`) and a `platform` field that callers can use to build OS-specific user messages
   2. `FileSystem.IsSafeFilePath()` unit tests pass on Linux for both `../` and `..\` traversal sequences, confirming path traversal protection works against the Linux `Path.GetInvalidPathChars()` set
   3. `README.md` documents: C# script Windows-only restriction, native package as recommended Linux path, IPC package Linux support version, and which Vortex workarounds can be removed after these fixes land
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md -- Warning payload enrichment: reason and platform fields on Instruction record (UX-01)
+- [ ] 03-02-PLAN.md -- IsSafeFilePath traversal tests and README Linux notes (UX-02, UX-03)
 
 ## Progress
 
@@ -64,4 +68,4 @@ Phases execute in numeric order: 1 -> 2 -> 3
 |-------|----------------|--------|-----------|
 | 1. C# Correctness | 0/1 | Planned | - |
 | 2. IPC Linux Pipeline | 0/2 | Planned | - |
-| 3. UX Hardening | 0/TBD | Not started | - |
+| 3. UX Hardening | 0/2 | Planned | - |
