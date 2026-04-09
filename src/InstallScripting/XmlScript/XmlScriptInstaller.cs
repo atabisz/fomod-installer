@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using FomodInstaller.Interface;
+using Utils;
 
 namespace FomodInstaller.Scripting.XmlScript
 {
@@ -136,7 +137,7 @@ namespace FomodInstaller.Scripting.XmlScript
                 int count = matchedFiles.Count;
                 if (count == 1)
                 {
-                    string strSource = matchedFiles[0];
+                    string strSource = TextUtil.NormalizePath(matchedFiles[0], false, true);
                     string strDest = NormalizeSeparators(installableFile.Destination);
                     InstallFileFromMod(strSource, strDest, installableFile.Priority + priorityOffset);
                 }
