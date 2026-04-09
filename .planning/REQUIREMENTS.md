@@ -55,21 +55,21 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PATH-01 | — | Pending |
-| PATH-02 | — | Pending |
-| GUARD-01 | — | Pending |
-| IPC-01 | — | Pending |
-| IPC-02 | — | Pending |
-| IPC-03 | — | Pending |
-| UX-01 | — | Pending |
-| UX-02 | — | Pending |
-| UX-03 | — | Pending |
+| PATH-01 | Phase 1 | Pending |
+| PATH-02 | Phase 1 | Pending |
+| GUARD-01 | Phase 1 | Pending |
+| IPC-01 | Phase 2 | Pending |
+| IPC-02 | Phase 2 | Pending |
+| IPC-03 | Phase 2 | Pending |
+| UX-01 | Phase 3 | Pending |
+| UX-02 | Phase 3 | Pending |
+| UX-03 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 9 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 9 ⚠️
+- Mapped to phases: 9 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-09*
-*Last updated: 2026-04-09 after initial definition*
+*Last updated: 2026-04-09 after roadmap creation*
